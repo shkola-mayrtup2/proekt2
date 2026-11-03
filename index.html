@@ -9,15 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
   :root {
     --bg-dark: #0B1120;
-    --bg-panel: rgba(30, 41, 59, 0.7);
+    --bg-panel: rgba(30, 41, 59, 0.85);
     --primary: #14b8a6;
-    --primary-glow: rgba(20, 184, 166, 0.4);
+    --primary-glow: rgba(20, 184, 166, 0.5);
     --text-main: #F8FAFC;
     --text-muted: #94A3B8;
     --border-color: rgba(255, 255, 255, 0.1);
@@ -29,18 +31,20 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.08), transparent 25%),
-      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.08), transparent 25%);
+      radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.1), transparent 30%),
+      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1), transparent 30%);
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
+  /* СКРОЛЛБАР */
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: var(--bg-dark); }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
+  /* ШАПКА */
   header {
     background: rgba(11, 17, 32, 0.8);
     backdrop-filter: blur(16px);
@@ -56,7 +60,7 @@
   }
   .logo-area h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
+    font-size: 22px;
     letter-spacing: 1px;
     background: linear-gradient(90deg, #5eead4, #38bdf8);
     -webkit-background-clip: text;
@@ -65,7 +69,7 @@
   .logo-area p {
     font-size: 11px;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: 4px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
   }
@@ -94,6 +98,7 @@
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
+  /* НАВИГАЦИЯ */
   nav {
     display: flex;
     gap: 10px;
@@ -124,7 +129,8 @@
     box-shadow: 0 0 20px var(--primary-glow);
   }
 
-  .tab { display: none; padding: 24px 30px 60px; animation: fadeUp 0.4s ease; }
+  /* ВКЛАДКИ */
+  .tab { display: none; padding: 20px; animation: fadeUp 0.4s ease; }
   .tab.active { display: block; }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(15px); }
@@ -140,10 +146,25 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* КАРТА */
-  .map-wrap { display: flex; gap: 20px; flex-wrap: wrap; height: calc(100vh - 200px); min-height: 550px; }
-  #map { flex: 1 1 600px; height: 100%; min-height: 550px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
-  .sidebar { flex: 0 1 300px; padding: 24px; display: flex; flex-direction: column; }
+  /* ЖЕЛЕЗОБЕТОННАЯ ВЕРСТКА КАРТЫ (CSS GRID) */
+  .map-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    height: calc(100vh - 160px);
+    min-height: 600px;
+  }
+  
+  #map {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    z-index: 1;
+    background: #1e293b;
+  }
+
+  .sidebar { padding: 24px; display: flex; flex-direction: column; overflow-y: auto; }
   .sidebar h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
   .sidebar h3::before { content: ''; display: block; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
   
@@ -153,15 +174,35 @@
     border: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.6); 
     color: var(--text-main); cursor: pointer; font-size: 14px; text-align: left; transition: 0.3s;
   }
-  .layer-btn:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05);px }
-  .layer-btn;.on { background: rgba( height20, 184, 166, 0.15);: border-color: var(--primary); }
-   .dot { width: 1212px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+  .layer-btn:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
+  .layer-btn.on { background: rgba(20, 184, 166, 0.15); border-color: var(--primary); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
   
+  .fly-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .fly-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6); }
+
   .sidebar .stats { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
   .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; color: var(--text-muted); }
   .stat-row b { color: var(--primary); font-size: 15px; }
 
-  /* СТИЛИЗАЦИЯ КНОПКИ СЛОЁВ LEAFLET ПОД ТЕМНУЮ ТЕМУ */
+  /* СТИЛИЗАЦИЯ СЛОЁВ LEAFLET */
   .leaflet-control-layers {
     background: rgba(15, 23, 42, 0.9) !important;
     color: #fff !important;
@@ -171,7 +212,6 @@
     font-family: 'Inter', sans-serif !important;
     font-size: 13px !important;
   }
-  .leaflet-control-layers-separator { border-top: 1px solid var(--border-color) !important; }
   
   /* ПОПАПЫ КАРТЫ */
   .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.95); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -189,11 +229,11 @@
   
   .slide-box { padding: 50px; min-height: 480px; display: flex; flex-direction: column; justify-content: center; position: relative; }
   .slide-num { font-family: 'Space Grotesk', sans-serif; color: var(--primary); font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
-  .slide-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 34px; margin-bottom: 24px; line-height: 1.2; }
+  .slide-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 36px; margin-bottom: 24px; line-height: 1.2; }
   .slide-box ul { margin-left: 20px; }
-  .slide-box li { font-size: 17px; line-height: 1.8; margin-bottom: 12px; color: #E2E8F0; }
+  .slide-box li { font-size: 18px; line-height: 1.8; margin-bottom: 12px; color: #E2E8F0; }
   .slide-box li b { color: var(--primary); }
-  .slide-box .note { margin-top: 30px; padding: 16px 20px; background: rgba(20, 184, 166, 0.1); border-left: 4px solid var(--primary); border-radius: 8px; font-size: 15px; color: #CBD5E1; font-style: italic; }
+  .slide-box .note { margin-top: 30px; padding: 16px 20px; background: rgba(20, 184, 166, 0.1); border-left: 4px solid var(--primary); border-radius: 8px; font-size: 16px; color: #CBD5E1; font-style: italic; }
   
   .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
   .controls button { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
@@ -217,10 +257,12 @@
   .checklist li:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
   .checklist li::before { content: '✓'; color: var(--bg-dark); background: var(--primary); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 14px; flex-shrink: 0; }
 
-  @media (max-width: 768px) {
+  /* АДАПТИВ ПОД ТЕЛЕФОНЫ */
+  @media (max-width: 900px) {
     header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .map-wrap { height: auto; flex-direction: column; }
-    #map { height: 450px; min-height: 450px; }
+    .map-layout { grid-template-columns: 1fr; height: auto; }
+    #map { height: 500px; }
+    .sidebar { height: auto; overflow-y: visible; }
     .slide-box { padding: 30px 20px; }
     .slide-box h2 { font-size: 24px; }
     .content-box { padding: 24px 20px; }
@@ -249,8 +291,9 @@
 
 <!-- КАРТА -->
 <div id="mapTab" class="tab active">
-  <div class="map-wrap">
+  <div class="map-layout">
     <div id="map" class="glass-panel"></div>
+    
     <div class="sidebar glass-panel">
       <h3>Слои данных</h3>
       
@@ -265,6 +308,11 @@
       </button>
       <button class="layer-btn on" data-layer="personal" onclick="toggleLayer('personal', this)">
         <span class="dot" style="background:#ef4444; color:#ef4444;"></span> Моя точка (Майртуп)
+      </button>
+
+      <!-- Кнопка перелета к селу -->
+      <button class="fly-btn" onclick="flyToMayrtup()">
+        🎯 Перелет в Майртуп
       </button>
 
       <div class="stats">
@@ -309,7 +357,7 @@
     <p>«Актуальность в том, что карта показывает Чечню как единый живой организм, где древность соседствует с современностью. Новизна — в тематических слоях. Но главное — на карте есть моя личная точка: родное село Майртуп в Курчалоевском районе. Именно от старших я впервые услышал историю нашего края. Такого не будет ни у кого другого».</p>
 
     <h4>Слайд 4 — Техническое решение <span class="timing">30 сек</span></h4>
-    <p>«Технически карта создана на основе библиотеки Leaflet. Это профессиональное решение: оно работает на любом устройстве, не требует установки и позволяет переключать слои в один клик. Я специально выбрал спутниковую карту и темную тему оформления, чтобы проект выглядел как современное приложение».</p>
+    <p>«Технически карта создана на основе библиотеки Leaflet. Это профессиональное решение: оно работает на любом устройстве, не требует установки. Я специально выбрал спутниковую карту и темную тему оформления, чтобы проект выглядел как современное приложение. А для быстрого поиска я добавил кнопку автоматического перелета к моему селу».</p>
 
     <h4>Слайд 5 — Демонстрация <span class="timing">30 сек</span></h4>
     <p>«Обратите внимание на интерфейс. Слева — панель слоёв. Нажимаем на точку — открывается описание. Я протестировал карту на одноклассниках: они находили нужный объект за 3–5 секунд. Это подтверждает удобство».</p>
@@ -359,7 +407,10 @@ function showTab(id, btn) {
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (id === 'mapTab' && map) setTimeout(() => map.invalidateSize(), 200);
+  
+  if (id === 'mapTab' && map) {
+    setTimeout(() => { map.invalidateSize(); }, 200);
+  }
 }
 
 // КАРТА
@@ -389,10 +440,12 @@ L.control.layers(
 ).addTo(map);
 
 const layers = {};
+
+// Кастомные неоновые маркеры
 function makeIcon(color) {
   return L.divIcon({
     className: '',
-    html: `<div style="width:16px;height:16px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 0 12px ${color};"></div>`,
+    html: `<div style="width:16px;height:16px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 0 15px ${color}; animation: pulseMarker 2s infinite;"></div>`,
     iconSize: [16, 16], iconAnchor: [8, 8]
   });
 }
@@ -441,11 +494,27 @@ function toggleLayer(key, btn) {
   }
 }
 
+// ФУНКЦИЯ ПЕРЕЛЕТА В МАЙРТУП
+function flyToMayrtup() {
+  map.flyTo([43.2036, 46.1322], 14, {
+    duration: 2.5 
+  });
+  
+  setTimeout(() => {
+    layers.personal.eachLayer(layer => {
+      if (layer.getLatLng().lat === 43.2036) {
+        layer.openPopup();
+      }
+    });
+  }, 2500);
+}
+
+// СЛАЙДЫ
 const slides = [
   { title: "Чечня: живая карта наследия", body: `<ul><li><b>Номинация:</b> «Интерактивная карта»</li><li><b>Автор:</b> Мехди Эльмурзаев</li><li><b>Село:</b> Майртуп, Курчалоевский район</li></ul><div class="note">«Карта — это маршрут к пониманию родного края».</div>` },
   { title: "Проблема и идея", body: `<ul><li>Информация разрознена.</li><li><b>Идея:</b> создать единую интерактивную карту.</li></ul>` },
   { title: "Актуальность и новизна", body: `<ul><li>Связь поколений и культур.</li><li><b>Личная точка</b> — Майртуп.</li></ul>` },
-  { title: "Техническое решение", body: `<ul><li><b>Платформа:</b> библиотека Leaflet.</li><li><b>Функции:</b> 4 слоя, спутниковая карта.</li></ul>` },
+  { title: "Техническое решение", body: `<ul><li><b>Платформа:</b> библиотека Leaflet.</li><li><b>Функции:</b> 4 слоя, спутниковая карта, автоперелет.</li></ul>` },
   { title: "Как выглядит карта", body: `<ul><li>Панель слоёв.</li><li>Интерактивные всплывающие окна.</li></ul>` },
   { title: "Примеры точек", body: `<ul><li><b>Мечеть «Сердце Чечни»</b>.</li><li><b>Озеро Кезеной-Ам</b>.</li><li><b>Майртуп</b>.</li></ul>` },
   { title: "Работа завершена", body: `<ul><li><b>10 объектов</b> и <b>4 слоя</b>.</li></ul>` },
@@ -476,6 +545,17 @@ document.addEventListener('keydown', e => {
   }
 });
 renderSlide();
+
+// Добавляем CSS анимацию для маркеров на карте
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes pulseMarker {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+`;
+document.head.appendChild(style);
 </script>
 </body>
 </html>
