@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Чечня: Живая Карта Наследия | Мехди Эльмурзаев</title>
+
+<!-- Подключение профессиональных шрифтов -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- Leaflet (карта) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  :root {
+    --bg-dark: #0B1120;
+    --bg-panel: rgba(30, 41, 59, 0.7);
+    --primary: #14b8a6;
+    --primary-glow: rgba(20, 184, 166, 0.4);
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.08), transparent 25%);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* СКРОЛЛБАР */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-dark); }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+  /* ШАПКА */
+  header {
+    background: rgba(11, 17, 32, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .logo-area h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #5eead4, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-area p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(20, 184, 166, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    font-size: 12px;
+    font-weight: 600;
+    color: #5eead4;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #10b981;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  /* НАВИГАЦИЯ */
+  nav {
+    display: flex;
+    gap: 10px;
+    padding: 16px 30px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(30, 41, 59, 0.3);
+  }
+  nav button {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+  }
+  nav button:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  nav button.active {
+    background: rgba(20, 184, 166, 0.15);
+    color: var(--primary);
+    border-color: rgba(20, 184, 166, 0.3);
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+
+  /* ВКЛАДКИ */
+  .tab { display: none; padding: 24px 30px 60px; animation: fadeUp 0.4s ease; }
+  .tab.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* СТЕКЛЯННАЯ ПАНЕЛЬ */
+  .glass-panel {
+    background: var(--bg-panel);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* КАРТА */
+  .map-wrap { display: flex; gap: 20px; flex-wrap: wrap; height: calc(100vh - 220px); min-height: 500px; }
+  #map { flex: 1 1 600px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
+  .sidebar { flex: 0 1 300px; padding: 24px; display: flex; flex-direction: column; }
+  .sidebar h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+  .sidebar h3::before { content: ''; display: block; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
+  
+  .layer-btn {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 14px 16px; margin-bottom: 10px; border-radius: 12px;
+    border: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.6); 
+    color: var(--text-main); cursor: pointer; font-size: 14px; text-align: left; transition: 0.3s;
+  }
+  .layer-btn:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
+  .layer-btn.on { background: rgba(20, 184, 166, 0.15); border-color: var(--primary); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+  
+  .sidebar .stats { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
+  .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; color: var(--text-muted); }
+  .stat-row b { color: var(--primary); font-size: 15px; }
+
+  /* ПОПАПЫ КАРТЫ (Кастомные) */
+  .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.95); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+  .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-color); }
+  .leaflet-container a.leaflet-popup-close-button { color: var(--text-muted); }
+  .leaflet-container a.leaflet-popup-close-button:hover { color: var(--primary); }
+  .popup-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: var(--primary); margin-bottom: 6px; }
+  .popup-tag { display: inline-block; font-size: 10px; background: rgba(20, 184, 166, 0.2); color: #5eead4; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+  .popup-text { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); }
+
+  /* СЛАЙДЫ */
+  .slide-container { max-width: 960px; margin: 0 auto; }
+  .slide-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+  .slide-progress-bar { height: 100%; background: var(--primary); width: 10%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
+  
+  .slide-box { padding: 50px; min-height: 480px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+  .slide-num { font-family: 'Space Grotesk', sans-serif; color: var(--primary); font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
+  .slide-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 34px; margin-bottom: 24px; line-height: 1.2; }
+  .slide-box ul { margin-left: 20px; }
+  .slide-box li { font-size: 17px; line-height: 1.8; margin-bottom: 12px; color: #E2E8F0; }
+  .slide-box li b { color: var(--primary); }
+  .slide-box .note { margin-top: 30px; padding: 16px 20px; background: rgba(20, 184, 166, 0.1); border-left: 4px solid var(--primary); border-radius: 8px; font-size: 15px; color: #CBD5E1; font-style: italic; }
+  
+  .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+  .controls button { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+  .controls button:hover:not(:disabled) { background: var(--primary); border-color: var(--primary); color: #042f2e; transform: translateY(-2px); box-shadow: 0 4px 15px var(--primary-glow); }
+  .controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .counter { font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
+
+  /* РЕЧЬ И ЧЕКЛИСТ */
+  .content-box { max-width: 900px; margin: 0 auto; padding: 40px; }
+  .content-box h2 { font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; font-size: 26px; color: var(--primary); }
+  .content-box .meta { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+  .content-box h4 { color: #38bdf8; margin: 24px 0 10px; font-size: 15px; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+  .content-box p { font-size: 15.5px; color: #E2E8F0; margin-bottom: 12px; background: rgba(15, 23, 42, 0.5); padding: 16px 20px; border-radius: 10px; border-left: 3px solid #38bdf8; }
+  .timing { font-size: 11px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+  .qa-block { background: rgba(15, 23, 42, 0.6); padding: 16px 20px; border-radius: 10px; margin-bottom: 12px; border-left: 3px solid #F59E0B; }
+  .qa-block strong { color: #FBBF24; display: block; margin-bottom: 8px; font-size: 15px; }
+  .qa-block span { color: #CBD5E1; font-size: 15px; font-style: italic; }
+  
+  .checklist { list-style: none; display: grid; gap: 10px; }
+  .checklist li { padding: 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; font-size: 15px; display: flex; align-items: center; gap: 16px; transition: 0.2s; }
+  .checklist li:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
+  .checklist li::before { content: '✓'; color: var(--bg-dark); background: var(--primary); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .map-wrap { height: auto; flex-direction: column; }
+    #map { height: 450px; }
+    .slide-box { padding: 30px 20px; }
+    .slide-box h2 { font-size: 24px; }
+    .content-box { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <h1>Чечня: Живая Карта Наследия</h1>
+    <p>Автор: Мехди Эльмурзаев · Майртуп</p>
+  </div>
+  <div class="status-badge">
+    <div class="status-dot"></div>
+    System Online
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('mapTab', this)">Карта</button>
+  <button onclick="showTab('slides', this)">Презентация</button>
+  <button onclick="showTab('speech', this)">Защита</button>
+  <button onclick="showTab('checklist', this)">Чек-лист</button>
+</nav>
+
+<!-- КАРТА -->
+<div id="mapTab" class="tab active">
+  <div class="map-wrap">
+    <div id="map" class="glass-panel"></div>
+    <div class="sidebar glass-panel">
+      <h3>Слои данных</h3>
+      
+      <button class="layer-btn on" data-layer="city" onclick="toggleLayer('city', this)">
+        <span class="dot" style="background:#f59e0b; color:#f59e0b;"></span> Город Грозный
+      </button>
+      <button class="layer-btn on" data-layer="nature" onclick="toggleLayer('nature', this)">
+        <span class="dot" style="background:#10b981; color:#10b981;"></span> Природа
+      </button>
+      <button class="layer-btn on" data-layer="history" onclick="toggleLayer('history', this)">
+        <span class="dot" style="background:#a16207; color:#a16207;"></span> История
+      </button>
+      <button class="layer-btn on" data-layer="personal" onclick="toggleLayer('personal', this)">
+        <span class="dot" style="background:#ef4444; color:#ef4444;"></span> Моя точка (Майртуп)
+      </button>
+
+      <div class="stats">
+        <div class="stat-row"><span>Объектов на карте:</span><b>10</b></div>
+        <div class="stat-row"><span>Интерактивных слоёв:</span><b>4</b></div>
+        <div class="stat-row"><span>Статус проекта:</span><b>Готов</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- СЛАЙДЫ -->
+<div id="slides" class="tab">
+  <div class="slide-container">
+    <div class="slide-progress">
+      <div class="slide-progress-bar" id="progressBar"></div>
+    </div>
+    
+    <div class="slide-box glass-panel" id="slideBox"></div>
+    
+    <div class="controls">
+      <button id="prevBtn" onclick="changeSlide(-1)">← Назад</button>
+      <span class="counter" id="counter">01 / 10</span>
+      <button id="nextBtn" onclick="changeSlide(1)">Вперёд →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ЗАЩИТА -->
+<div id="speech" class="tab">
+  <div class="content-box glass-panel">
+    <h2>Текст защиты</h2>
+    <div class="meta">Время: ~3,5 минуты. Читайте с выражением, смотрите на жюри.</div>
+
+    <h4>Слайд 1 — Вступление <span class="timing">20 сек</span></h4>
+    <p>«Здравствуйте, уважаемое жюри. Меня зовут Мехди Эльмурзаев. Я представляю проект “Чечня: живая карта наследия”. Это не просто набор меток, а исследование родного края, где каждый объект рассказывает историю».</p>
+
+    <h4>Слайд 2 — Проблема и идея <span class="timing">30 сек</span></h4>
+    <p>«Представьте: вы хотите рассказать о Чечне человеку, который здесь никогда не был. С чего начать? С древних башен? С озера Кезеной-Ам? Я понял, что нужна карта, которая связывает объекты в единую историю. Я подошёл к этому как исследователь: отобрал объекты, проверил факты и нашёл то, что обычно остаётся за пределами учебников».</p>
+
+    <h4>Слайд 3 — Актуальность и новизна <span class="timing">30 сек</span></h4>
+    <p>«Актуальность в том, что карта показывает Чечню как единый живой организм, где древность соседствует с современностью. Новизна — в тематических слоях. Но главное — на карте есть моя личная точка: родное село Майртуп в Курчалоевском районе. Именно от старших я впервые услышал историю нашего края. Такого не будет ни у кого другого».</p>
+
+    <h4>Слайд 4 — Техническое решение <span class="timing">30 сек</span></h4>
+    <p>«Технически карта создана на основе библиотеки Leaflet. Это профессиональное решение: оно работает на любом устройстве, не требует установки и позволяет переключать слои в один клик. Я специально выбрал ночную тему оформления, чтобы карта выглядела как современное приложение».</p>
+
+    <h4>Слайд 5 — Демонстрация <span class="timing">30 сек</span></h4>
+    <p>«Обратите внимание на интерфейс. Слева — панель слоёв. Нажимаем на точку — открывается описание. Я протестировал карту на одноклассниках: они находили нужный объект за 3–5 секунд. Это подтверждает удобство».</p>
+
+    <h4>Слайд 6 — Примеры точек <span class="timing">40 сек</span></h4>
+    <p>«Приведу примеры. Мечеть “Сердце Чечни” — символ возрождения Грозного. Озеро Кезеной-Ам — жемчужина Кавказа. Харачойская боевая башня — памятник средневековой архитектуры. И моя личная точка — Майртуп. Каждая точка — мини-история».</p>
+
+    <h4>Слайд 7 — Завершённость <span class="timing">20 сек</span></h4>
+    <p>«Работа завершена: на карте 10 объектов и 4 слоя. Всё протестировано на компьютере и телефоне».</p>
+
+    <h4>Слайд 8 — Практическая значимость <span class="timing">20 сек</span></h4>
+    <p>«Карту можно использовать на уроках краеведения, для экскурсий и для туристов. Это не проект “для галочки” — он уже сейчас приносит пользу».</p>
+
+    <h4>Слайд 9 — Перспективы <span class="timing">20 сек</span></h4>
+    <p>«В будущем я хочу добавить версию на чеченском языке, разместить QR-коды на местности и добавить аудиогид».</p>
+
+    <h4>Слайд 10 — Заключение <span class="timing">20 сек</span></h4>
+    <p>«Я хотел, чтобы каждый, кто откроет эту карту, захотел увидеть всё это своими глазами. Спасибо за внимание!».</p>
+
+    <h4 style="margin-top:34px; border-top:1px solid var(--border-color); padding-top:24px;">❓ Вопросы жюри</h4>
+    <div class="qa-block"><strong>— Почему выбрали Leaflet?</strong><span>«Это открытая библиотека, не требует API-ключа. Проект независим и доступен всем».</span></div>
+    <div class="qa-block"><strong>— Как проверяли удобство?</strong><span>«Тестировал на одноклассниках. Поиск объекта занимает 3–5 секунд».</span></div>
+    <div class="qa-block"><strong>— Чем отличается ваш проект?</strong><span>«Личной точкой — село Майртуп. Это карта с моей историей».</span></div>
+  </div>
+</div>
+
+<!-- ЧЕК-ЛИСТ -->
+<div id="checklist" class="tab">
+  <div class="content-box glass-panel">
+    <h2>Чек-лист перед выходом</h2>
+    <div class="meta">Проверьте за 15 минут до защиты.</div>
+    <ul class="checklist">
+      <li>Файл index.html открывается в браузере</li>
+      <li>Карта загружается, маркеры нажимаются</li>
+      <li>Красная точка "Майртуп" на месте</li>
+      <li>Слайды переключаются (кнопки и стрелки клавиатуры)</li>
+      <li>Текст защиты прочитан вслух 2 раза</li>
+      <li>Готовы ответы на 3 вопроса жюри</li>
+      <li>Ноутбук заряжен / есть зарядка</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ВКЛАДКИ */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'mapTab' && map) setTimeout(() => map.invalidateSize(), 100);
+}
+
+/* КАРТА (ТЕМНАЯ ТЕМА) */
+const map = L.map('map', { zoomControl: false }).setView([43.15, 45.9], 9);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+// Подключение темных тайлов (CartoDB Dark Matter) — выглядит мега-профессионально
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CartoDB',
+  subdomains: 'abcd',
+  maxZoom: 20
+}).addTo(map);
+
+const layers = {};
+
+// Кастомные неоновые маркеры
+function makeIcon(color) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:16px;height:16px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 0 12px ${color};"></div>`,
+    iconSize: [16, 16], iconAnchor: [8, 8]
+  });
+}
+
+const data = {
+  city: [
+    { name: "Мечеть «Сердце Чечни»", coords: [43.3178, 45.6981], tag: "Грозный",
+      text: "Одна из крупнейших мечетей Европы. Символ возрождения Грозного. Белый мрамор, хрустальные люстры." },
+    { name: "Церковь Михаила Архангела", coords: [43.3189, 45.6933], tag: "Грозный",
+      text: "Построена терскими казаками в 1892 году. Пример сохранения исторического наследия и единства народов." },
+    { name: "Аллея славы", coords: [43.3212, 45.6956], tag: "Грозный",
+      text: "Мемориал в честь победы в Великой Отечественной войне. Музей Ахмата Кадырова, стела и Вечный огонь." }
+  ],
+  nature: [
+    { name: "Озеро Кезеной-Ам", coords: [42.7833, 46.0500], tag: "Веденский район",
+      text: "Крупнейшее высокогорное озеро Северного Кавказа (1870 м). Прозрачная вода, редкая эйзенамская форель." },
+    { name: "Аргунское ущелье", coords: [42.9500, 45.8000], tag: "Шатойский район",
+      text: "Живописное ущелье с историческими и архитектурными памятниками. Древние башни и горные реки." },
+    { name: "Нихалойские водопады", coords: [43.0167, 45.7833], tag: "Шатойский район",
+      text: "Находятся при входе в Аргунское ущелье, в 60 км от Грозного. Очень живописное место." }
+  ],
+  history: [
+    { name: "Харачойская боевая башня", coords: [42.8833, 45.9833], tag: "Веденский район",
+      text: "Памятник средневековой архитектуры. Такие башни строили на века. Символ мужества предков." },
+    { name: "Катеринский комплекс", coords: [42.7500, 45.9000], tag: "Итум-Калинский район",
+      text: "Башни XIV–XVI веков. Объект культурного наследия. Место, где чувствуется дух древней Чечни." },
+    { name: "Зегарийский комплекс", coords: [42.8000, 45.9500], tag: "Итум-Калинский район",
+      text: "Ещё один объект культурного наследия. Живописное место, связанное с историей народа." }
+  ],
+  personal: [
+    { name: "⭐ Моё село — Майртуп", coords: [43.2036, 46.1322], tag: "Курчалоевский район",
+      text: "Майртуп — моё родное село. Здесь живёт моя семья, отсюда начинается мой путь. Именно от старших я впервые услышал историю нашего края." }
+  ]
+};
+
+const colors = { city: '#f59e0b', nature: '#10b981', history: '#a16207', personal: '#ef4444' };
+const tags = { city: 'Город', nature: 'Природа', history: 'История', personal: 'Личное' };
+
+for (const key in data) {
+  layers[key] = L.layerGroup();
+  data[key].forEach(p => {
+    const marker = L.marker(p.coords, { icon: makeIcon(colors[key]) });
+    marker.bindPopup(
+      `<div class="popup-tag">${tags[key]}</div>
+       <div class="popup-title">${p.name}</div>
+       <div class="popup-text">${p.text}</div>`
+    );
+    marker.addTo(layers[key]);
+  });
+  layers[key].addTo(map);
+}
+
+function toggleLayer(key, btn) {
+  if (map.hasLayer(layers[key])) {
+    map.removeLayer(layers[key]);
+    btn.classList.remove('on');
+  } else {
+    map.addLayer(layers[key]);
+    btn.classList.add('on');
+  }
+}
+
+/* СЛАЙДЫ */
+const slides = [
+  { title: "Чечня: живая карта наследия",
+    body: `<ul>
+      <li><b>Номинация:</b> «Интерактивная карта»</li>
+      <li><b>Автор:</b> Мехди Эльмурзаев</li>
+      <li><b>Село:</b> Майртуп, Курчалоевский район</li>
+    </ul>
+    <div class="note">«Карта — это не просто точки. Это маршрут к пониманию родного края».</div>` },
+  { title: "Проблема и идея",
+    body: `<ul>
+      <li>Информация о достопримечательностях Чечни разрознена.</li>
+      <li><b>Идея:</b> создать единую интерактивную карту, где объекты связаны в единую историю.</li>
+      <li>Подход исследователя: проверил факты и нашёл малоизвестные объекты.</li>
+    </ul>
+    <div class="note">«Не список, а маршрут исследователя».</div>` },
+  { title: "Актуальность и новизна",
+    body: `<ul>
+      <li>Карта показывает связь поколений и культур (День народного единства).</li>
+      <li>Тематические слои: «Город», «Природа», «История», «Личное».</li>
+      <li><b>Личная точка</b> — моё родное село Майртуп.</li>
+    </ul>
+    <div class="note">Уникальная метка автора.</div>` },
+  { title: "Техническое решение",
+    body: `<ul>
+      <li><b>Платформа:</b> библиотека Leaflet (профессиональный стандарт).</li>
+      <li><b>Функции:</b> 4 слоя, кастомный дизайн (Dark Mode), всплывающие окна.</li>
+      <li><b>Доступность:</b> работает на любом браузере без установки.</li>
+    </ul>
+    <div class="note">Современный интерфейс как в IT-компаниях.</div>` },
+  { title: "Как выглядит карта",
+    body: `<ul>
+      <li>Панель слоёв — включение категорий в один клик.</li>
+      <li>Интерактивные всплывающие окна.</li>
+      <li>Корректная работа на телефоне и ПК.</li>
+    </ul>
+    <div class="note">💡 Вставьте сюда скриншоты для защиты без интернета.</div>` },
+  { title: "Примеры точек",
+    body: `<ul>
+      <li><b>Мечеть «Сердце Чечни»</b> — символ возрождения.</li>
+      <li><b>Озеро Кезеной-Ам</b> — крупнейшее озеро Кавказа.</li>
+      <li><b>Харачойская башня</b> — памятник архитектуры.</li>
+      <li><b>Майртуп</b> — моё родное село.</li>
+    </ul>
+    <div class="note">Каждая точка — мини-история.</div>` },
+  { title: "Работа завершена",
+    body: `<ul>
+      <li>На карте <b>10 объектов</b> и <b>4 слоя</b>.</li>
+      <li>Протестирована на разных устройствах.</li>
+      <li>Поиск объекта занимает 3–5 секунд.</li>
+    </ul>` },
+  { title: "Практическая значимость",
+    body: `<ul>
+      <li>Уроки краеведения и истории.</li>
+      <li>Школьные экскурсии.</li>
+      <li>Туристы и самостоятельное изучение.</li>
+    </ul>
+    <div class="note">Карта уже сейчас приносит пользу.</div>` },
+  { title: "Что дальше",
+    body: `<ul>
+      <li>Добавить больше объектов.</li>
+      <li>Версия на чеченском языке.</li>
+      <li>Разместить QR-коды на местности.</li>
+    </ul>` },
+  { title: "Спасибо за внимание!",
+    body: `<ul>
+      <li>Карта — приглашение увидеть Чечню своими глазами.</li>
+      <li><b>Автор:</b> Мехди Эльмурзаев</li>
+      <li><b>Село:</b> Майртуп</li>
+    </ul>
+    <div class="note">Готов ответить на вопросы.</div>` }
+];
+
+let current = 0;
+function renderSlide() {
+  const s = slides[current];
+  document.getElementById('slideBox').innerHTML = `
+    <div class="slide-num">СЛАЙД ${String(current + 1).padStart(2, '0')} / 10</div>
+    <h2>${s.title}</h2>
+    <div>${s.body}</div>`;
+  
+  document.getElementById('counter').textContent = String(current + 1).padStart(2, '0') + ' / 10';
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === slides.length - 1;
+  
+  // Обновление полосы прогресса
+  const progress = ((current + 1) / slides.length) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+}
+
+function changeSlide(dir) {
+  current = Math.min(Math.max(current + dir, 0), slides.length - 1);
+  renderSlide();
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('slides').classList.contains('active')) {
+    if (e.key === 'ArrowRight') changeSlide(1);
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+  }
+});
+renderSlide();
+</script>
+</body>
+</html>
