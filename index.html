@@ -140,7 +140,7 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* ИСПРАВЛЕНА ВЫСОТА КАРТЫ */
+  /* КАРТА */
   .map-wrap { display: flex; gap: 20px; flex-wrap: wrap; height: calc(100vh - 200px); min-height: 550px; }
   #map { flex: 1 1 600px; height: 100%; min-height: 550px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
   .sidebar { flex: 0 1 300px; padding: 24px; display: flex; flex-direction: column; }
@@ -153,14 +153,27 @@
     border: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.6); 
     color: var(--text-main); cursor: pointer; font-size: 14px; text-align: left; transition: 0.3s;
   }
-  .layer-btn:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
-  .layer-btn.on { background: rgba(20, 184, 166, 0.15); border-color: var(--primary); }
-  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+  .layer-btn:hover { border-color: var(--primary); background: rgba(20, 184, 166, 0.05);px }
+  .layer-btn;.on { background: rgba( height20, 184, 166, 0.15);: border-color: var(--primary); }
+   .dot { width: 1212px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
   
   .sidebar .stats { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
   .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; color: var(--text-muted); }
   .stat-row b { color: var(--primary); font-size: 15px; }
 
+  /* СТИЛИЗАЦИЯ КНОПКИ СЛОЁВ LEAFLET ПОД ТЕМНУЮ ТЕМУ */
+  .leaflet-control-layers {
+    background: rgba(15, 23, 42, 0.9) !important;
+    color: #fff !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(10px);
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+  }
+  .leaflet-control-layers-separator { border-top: 1px solid var(--border-color) !important; }
+  
+  /* ПОПАПЫ КАРТЫ */
   .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.95); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
   .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-color); }
   .leaflet-container a.leaflet-popup-close-button { color: var(--text-muted); }
@@ -169,6 +182,7 @@
   .popup-tag { display: inline-block; font-size: 10px; background: rgba(20, 184, 166, 0.2); color: #5eead4; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
   .popup-text { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); }
 
+  /* СЛАЙДЫ */
   .slide-container { max-width: 960px; margin: 0 auto; }
   .slide-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
   .slide-progress-bar { height: 100%; background: var(--primary); width: 10%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
@@ -187,6 +201,7 @@
   .controls button:disabled { opacity: 0.3; cursor: not-allowed; }
   .counter { font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
 
+  /* ЗАЩИТА И ЧЕК-ЛИСТ */
   .content-box { max-width: 900px; margin: 0 auto; padding: 40px; }
   .content-box h2 { font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; font-size: 26px; color: var(--primary); }
   .content-box .meta { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
@@ -235,7 +250,6 @@
 <!-- КАРТА -->
 <div id="mapTab" class="tab active">
   <div class="map-wrap">
-    <!-- Карта теперь с жесткой высотой -->
     <div id="map" class="glass-panel"></div>
     <div class="sidebar glass-panel">
       <h3>Слои данных</h3>
@@ -295,7 +309,7 @@
     <p>«Актуальность в том, что карта показывает Чечню как единый живой организм, где древность соседствует с современностью. Новизна — в тематических слоях. Но главное — на карте есть моя личная точка: родное село Майртуп в Курчалоевском районе. Именно от старших я впервые услышал историю нашего края. Такого не будет ни у кого другого».</p>
 
     <h4>Слайд 4 — Техническое решение <span class="timing">30 сек</span></h4>
-    <p>«Технически карта создана на основе библиотеки Leaflet. Это профессиональное решение: оно работает на любом устройстве, не требует установки и позволяет переключать слои в один клик. Я специально выбрал ночную тему оформления, чтобы карта выглядела как современное приложение».</p>
+    <p>«Технически карта создана на основе библиотеки Leaflet. Это профессиональное решение: оно работает на любом устройстве, не требует установки и позволяет переключать слои в один клик. Я специально выбрал спутниковую карту и темную тему оформления, чтобы проект выглядел как современное приложение».</p>
 
     <h4>Слайд 5 — Демонстрация <span class="timing">30 сек</span></h4>
     <p>«Обратите внимание на интерфейс. Слева — панель слоёв. Нажимаем на точку — открывается описание. Я протестировал карту на одноклассниках: они находили нужный объект за 3–5 секунд. Это подтверждает удобство».</p>
@@ -352,11 +366,27 @@ function showTab(id, btn) {
 const map = L.map('map', { zoomControl: false }).setView([43.15, 45.9], 9);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CartoDB',
-  subdomains: 'abcd',
-  maxZoom: 20
-}).addTo(map);
+// Слой Спутника (Esri)
+const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri',
+  maxZoom: 19
+});
+
+// Слой Схемы (OpenStreetMap)
+const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 19
+});
+
+// Добавляем спутник по умолчанию
+satellite.addTo(map);
+
+// Добавляем переключатель слоёв (в правом верхнем углу)
+L.control.layers(
+  { "🛰️ Спутник": satellite, "🗺️ Схема": streets },
+  null,
+  { position: 'topright' }
+).addTo(map);
 
 const layers = {};
 function makeIcon(color) {
@@ -415,7 +445,7 @@ const slides = [
   { title: "Чечня: живая карта наследия", body: `<ul><li><b>Номинация:</b> «Интерактивная карта»</li><li><b>Автор:</b> Мехди Эльмурзаев</li><li><b>Село:</b> Майртуп, Курчалоевский район</li></ul><div class="note">«Карта — это маршрут к пониманию родного края».</div>` },
   { title: "Проблема и идея", body: `<ul><li>Информация разрознена.</li><li><b>Идея:</b> создать единую интерактивную карту.</li></ul>` },
   { title: "Актуальность и новизна", body: `<ul><li>Связь поколений и культур.</li><li><b>Личная точка</b> — Майртуп.</li></ul>` },
-  { title: "Техническое решение", body: `<ul><li><b>Платформа:</b> библиотека Leaflet.</li><li><b>Функции:</b> 4 слоя, Dark Mode.</li></ul>` },
+  { title: "Техническое решение", body: `<ul><li><b>Платформа:</b> библиотека Leaflet.</li><li><b>Функции:</b> 4 слоя, спутниковая карта.</li></ul>` },
   { title: "Как выглядит карта", body: `<ul><li>Панель слоёв.</li><li>Интерактивные всплывающие окна.</li></ul>` },
   { title: "Примеры точек", body: `<ul><li><b>Мечеть «Сердце Чечни»</b>.</li><li><b>Озеро Кезеной-Ам</b>.</li><li><b>Майртуп</b>.</li></ul>` },
   { title: "Работа завершена", body: `<ul><li><b>10 объектов</b> и <b>4 слоя</b>.</li></ul>` },
