@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Чечня: Живая Карта Наследия | Мехди Эльмурзаев</title>
 
-<!-- Подключение профессиональных шрифтов -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
-<!-- Leaflet (карта) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -38,13 +36,11 @@
     overflow-x: hidden;
   }
 
-  /* СКРОЛЛБАР */
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: var(--bg-dark); }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-  /* ШАПКА */
   header {
     background: rgba(11, 17, 32, 0.8);
     backdrop-filter: blur(16px);
@@ -98,7 +94,6 @@
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
-  /* НАВИГАЦИЯ */
   nav {
     display: flex;
     gap: 10px;
@@ -129,7 +124,6 @@
     box-shadow: 0 0 20px var(--primary-glow);
   }
 
-  /* ВКЛАДКИ */
   .tab { display: none; padding: 24px 30px 60px; animation: fadeUp 0.4s ease; }
   .tab.active { display: block; }
   @keyframes fadeUp {
@@ -137,7 +131,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* СТЕКЛЯННАЯ ПАНЕЛЬ */
   .glass-panel {
     background: var(--bg-panel);
     backdrop-filter: blur(12px);
@@ -147,9 +140,9 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  /* КАРТА */
-  .map-wrap { display: flex; gap: 20px; flex-wrap: wrap; height: calc(100vh - 220px); min-height: 500px; }
-  #map { flex: 1 1 600px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
+  /* ИСПРАВЛЕНА ВЫСОТА КАРТЫ */
+  .map-wrap { display: flex; gap: 20px; flex-wrap: wrap; height: calc(100vh - 200px); min-height: 550px; }
+  #map { flex: 1 1 600px; height: 100%; min-height: 550px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
   .sidebar { flex: 0 1 300px; padding: 24px; display: flex; flex-direction: column; }
   .sidebar h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
   .sidebar h3::before { content: ''; display: block; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
@@ -168,7 +161,6 @@
   .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; color: var(--text-muted); }
   .stat-row b { color: var(--primary); font-size: 15px; }
 
-  /* ПОПАПЫ КАРТЫ (Кастомные) */
   .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.95); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
   .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-color); }
   .leaflet-container a.leaflet-popup-close-button { color: var(--text-muted); }
@@ -177,7 +169,6 @@
   .popup-tag { display: inline-block; font-size: 10px; background: rgba(20, 184, 166, 0.2); color: #5eead4; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
   .popup-text { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); }
 
-  /* СЛАЙДЫ */
   .slide-container { max-width: 960px; margin: 0 auto; }
   .slide-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
   .slide-progress-bar { height: 100%; background: var(--primary); width: 10%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
@@ -196,7 +187,6 @@
   .controls button:disabled { opacity: 0.3; cursor: not-allowed; }
   .counter { font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
 
-  /* РЕЧЬ И ЧЕКЛИСТ */
   .content-box { max-width: 900px; margin: 0 auto; padding: 40px; }
   .content-box h2 { font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; font-size: 26px; color: var(--primary); }
   .content-box .meta { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
@@ -215,7 +205,7 @@
   @media (max-width: 768px) {
     header { flex-direction: column; align-items: flex-start; gap: 12px; }
     .map-wrap { height: auto; flex-direction: column; }
-    #map { height: 450px; }
+    #map { height: 450px; min-height: 450px; }
     .slide-box { padding: 30px 20px; }
     .slide-box h2 { font-size: 24px; }
     .content-box { padding: 24px 20px; }
@@ -245,6 +235,7 @@
 <!-- КАРТА -->
 <div id="mapTab" class="tab active">
   <div class="map-wrap">
+    <!-- Карта теперь с жесткой высотой -->
     <div id="map" class="glass-panel"></div>
     <div class="sidebar glass-panel">
       <h3>Слои данных</h3>
@@ -349,20 +340,18 @@
 </div>
 
 <script>
-/* ВКЛАДКИ */
 function showTab(id, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (id === 'mapTab' && map) setTimeout(() => map.invalidateSize(), 100);
+  if (id === 'mapTab' && map) setTimeout(() => map.invalidateSize(), 200);
 }
 
-/* КАРТА (ТЕМНАЯ ТЕМА) */
+// КАРТА
 const map = L.map('map', { zoomControl: false }).setView([43.15, 45.9], 9);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// Подключение темных тайлов (CartoDB Dark Matter) — выглядит мега-профессионально
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; OpenStreetMap &copy; CartoDB',
   subdomains: 'abcd',
@@ -370,8 +359,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 }).addTo(map);
 
 const layers = {};
-
-// Кастомные неоновые маркеры
 function makeIcon(color) {
   return L.divIcon({
     className: '',
@@ -382,32 +369,22 @@ function makeIcon(color) {
 
 const data = {
   city: [
-    { name: "Мечеть «Сердце Чечни»", coords: [43.3178, 45.6981], tag: "Грозный",
-      text: "Одна из крупнейших мечетей Европы. Символ возрождения Грозного. Белый мрамор, хрустальные люстры." },
-    { name: "Церковь Михаила Архангела", coords: [43.3189, 45.6933], tag: "Грозный",
-      text: "Построена терскими казаками в 1892 году. Пример сохранения исторического наследия и единства народов." },
-    { name: "Аллея славы", coords: [43.3212, 45.6956], tag: "Грозный",
-      text: "Мемориал в честь победы в Великой Отечественной войне. Музей Ахмата Кадырова, стела и Вечный огонь." }
+    { name: "Мечеть «Сердце Чечни»", coords: [43.3178, 45.6981], tag: "Грозный", text: "Одна из крупнейших мечетей Европы. Символ возрождения Грозного." },
+    { name: "Церковь Михаила Архангела", coords: [43.3189, 45.6933], tag: "Грозный", text: "Построена терскими казаками в 1892 году. Пример единства народов." },
+    { name: "Аллея славы", coords: [43.3212, 45.6956], tag: "Грозный", text: "Мемориал в честь победы в Великой Отечественной войне." }
   ],
   nature: [
-    { name: "Озеро Кезеной-Ам", coords: [42.7833, 46.0500], tag: "Веденский район",
-      text: "Крупнейшее высокогорное озеро Северного Кавказа (1870 м). Прозрачная вода, редкая эйзенамская форель." },
-    { name: "Аргунское ущелье", coords: [42.9500, 45.8000], tag: "Шатойский район",
-      text: "Живописное ущелье с историческими и архитектурными памятниками. Древние башни и горные реки." },
-    { name: "Нихалойские водопады", coords: [43.0167, 45.7833], tag: "Шатойский район",
-      text: "Находятся при входе в Аргунское ущелье, в 60 км от Грозного. Очень живописное место." }
+    { name: "Озеро Кезеной-Ам", coords: [42.7833, 46.0500], tag: "Веденский район", text: "Крупнейшее высокогорное озеро Северного Кавказа." },
+    { name: "Аргунское ущелье", coords: [42.9500, 45.8000], tag: "Шатойский район", text: "Живописное ущелье с историческими памятниками." },
+    { name: "Нихалойские водопады", coords: [43.0167, 45.7833], tag: "Шатойский район", text: "Находятся при входе в Аргунское ущелье." }
   ],
   history: [
-    { name: "Харачойская боевая башня", coords: [42.8833, 45.9833], tag: "Веденский район",
-      text: "Памятник средневековой архитектуры. Такие башни строили на века. Символ мужества предков." },
-    { name: "Катеринский комплекс", coords: [42.7500, 45.9000], tag: "Итум-Калинский район",
-      text: "Башни XIV–XVI веков. Объект культурного наследия. Место, где чувствуется дух древней Чечни." },
-    { name: "Зегарийский комплекс", coords: [42.8000, 45.9500], tag: "Итум-Калинский район",
-      text: "Ещё один объект культурного наследия. Живописное место, связанное с историей народа." }
+    { name: "Харачойская боевая башня", coords: [42.8833, 45.9833], tag: "Веденский район", text: "Памятник средневековой архитектуры." },
+    { name: "Катеринский комплекс", coords: [42.7500, 45.9000], tag: "Итум-Калинский район", text: "Башни XIV–XVI веков." },
+    { name: "Зегарийский комплекс", coords: [42.8000, 45.9500], tag: "Итум-Калинский район", text: "Объект культурного наследия." }
   ],
   personal: [
-    { name: "⭐ Моё село — Майртуп", coords: [43.2036, 46.1322], tag: "Курчалоевский район",
-      text: "Майртуп — моё родное село. Здесь живёт моя семья, отсюда начинается мой путь. Именно от старших я впервые услышал историю нашего края." }
+    { name: "⭐ Моё село — Майртуп", coords: [43.2036, 46.1322], tag: "Курчалоевский район", text: "Майртуп — моё родное село. Здесь живёт моя семья." }
   ]
 };
 
@@ -418,11 +395,7 @@ for (const key in data) {
   layers[key] = L.layerGroup();
   data[key].forEach(p => {
     const marker = L.marker(p.coords, { icon: makeIcon(colors[key]) });
-    marker.bindPopup(
-      `<div class="popup-tag">${tags[key]}</div>
-       <div class="popup-title">${p.name}</div>
-       <div class="popup-text">${p.text}</div>`
-    );
+    marker.bindPopup(`<div class="popup-tag">${tags[key]}</div><div class="popup-title">${p.name}</div><div class="popup-text">${p.text}</div>`);
     marker.addTo(layers[key]);
   });
   layers[key].addTo(map);
@@ -438,94 +411,27 @@ function toggleLayer(key, btn) {
   }
 }
 
-/* СЛАЙДЫ */
 const slides = [
-  { title: "Чечня: живая карта наследия",
-    body: `<ul>
-      <li><b>Номинация:</b> «Интерактивная карта»</li>
-      <li><b>Автор:</b> Мехди Эльмурзаев</li>
-      <li><b>Село:</b> Майртуп, Курчалоевский район</li>
-    </ul>
-    <div class="note">«Карта — это не просто точки. Это маршрут к пониманию родного края».</div>` },
-  { title: "Проблема и идея",
-    body: `<ul>
-      <li>Информация о достопримечательностях Чечни разрознена.</li>
-      <li><b>Идея:</b> создать единую интерактивную карту, где объекты связаны в единую историю.</li>
-      <li>Подход исследователя: проверил факты и нашёл малоизвестные объекты.</li>
-    </ul>
-    <div class="note">«Не список, а маршрут исследователя».</div>` },
-  { title: "Актуальность и новизна",
-    body: `<ul>
-      <li>Карта показывает связь поколений и культур (День народного единства).</li>
-      <li>Тематические слои: «Город», «Природа», «История», «Личное».</li>
-      <li><b>Личная точка</b> — моё родное село Майртуп.</li>
-    </ul>
-    <div class="note">Уникальная метка автора.</div>` },
-  { title: "Техническое решение",
-    body: `<ul>
-      <li><b>Платформа:</b> библиотека Leaflet (профессиональный стандарт).</li>
-      <li><b>Функции:</b> 4 слоя, кастомный дизайн (Dark Mode), всплывающие окна.</li>
-      <li><b>Доступность:</b> работает на любом браузере без установки.</li>
-    </ul>
-    <div class="note">Современный интерфейс как в IT-компаниях.</div>` },
-  { title: "Как выглядит карта",
-    body: `<ul>
-      <li>Панель слоёв — включение категорий в один клик.</li>
-      <li>Интерактивные всплывающие окна.</li>
-      <li>Корректная работа на телефоне и ПК.</li>
-    </ul>
-    <div class="note">💡 Вставьте сюда скриншоты для защиты без интернета.</div>` },
-  { title: "Примеры точек",
-    body: `<ul>
-      <li><b>Мечеть «Сердце Чечни»</b> — символ возрождения.</li>
-      <li><b>Озеро Кезеной-Ам</b> — крупнейшее озеро Кавказа.</li>
-      <li><b>Харачойская башня</b> — памятник архитектуры.</li>
-      <li><b>Майртуп</b> — моё родное село.</li>
-    </ul>
-    <div class="note">Каждая точка — мини-история.</div>` },
-  { title: "Работа завершена",
-    body: `<ul>
-      <li>На карте <b>10 объектов</b> и <b>4 слоя</b>.</li>
-      <li>Протестирована на разных устройствах.</li>
-      <li>Поиск объекта занимает 3–5 секунд.</li>
-    </ul>` },
-  { title: "Практическая значимость",
-    body: `<ul>
-      <li>Уроки краеведения и истории.</li>
-      <li>Школьные экскурсии.</li>
-      <li>Туристы и самостоятельное изучение.</li>
-    </ul>
-    <div class="note">Карта уже сейчас приносит пользу.</div>` },
-  { title: "Что дальше",
-    body: `<ul>
-      <li>Добавить больше объектов.</li>
-      <li>Версия на чеченском языке.</li>
-      <li>Разместить QR-коды на местности.</li>
-    </ul>` },
-  { title: "Спасибо за внимание!",
-    body: `<ul>
-      <li>Карта — приглашение увидеть Чечню своими глазами.</li>
-      <li><b>Автор:</b> Мехди Эльмурзаев</li>
-      <li><b>Село:</b> Майртуп</li>
-    </ul>
-    <div class="note">Готов ответить на вопросы.</div>` }
+  { title: "Чечня: живая карта наследия", body: `<ul><li><b>Номинация:</b> «Интерактивная карта»</li><li><b>Автор:</b> Мехди Эльмурзаев</li><li><b>Село:</b> Майртуп, Курчалоевский район</li></ul><div class="note">«Карта — это маршрут к пониманию родного края».</div>` },
+  { title: "Проблема и идея", body: `<ul><li>Информация разрознена.</li><li><b>Идея:</b> создать единую интерактивную карту.</li></ul>` },
+  { title: "Актуальность и новизна", body: `<ul><li>Связь поколений и культур.</li><li><b>Личная точка</b> — Майртуп.</li></ul>` },
+  { title: "Техническое решение", body: `<ul><li><b>Платформа:</b> библиотека Leaflet.</li><li><b>Функции:</b> 4 слоя, Dark Mode.</li></ul>` },
+  { title: "Как выглядит карта", body: `<ul><li>Панель слоёв.</li><li>Интерактивные всплывающие окна.</li></ul>` },
+  { title: "Примеры точек", body: `<ul><li><b>Мечеть «Сердце Чечни»</b>.</li><li><b>Озеро Кезеной-Ам</b>.</li><li><b>Майртуп</b>.</li></ul>` },
+  { title: "Работа завершена", body: `<ul><li><b>10 объектов</b> и <b>4 слоя</b>.</li></ul>` },
+  { title: "Практическая значимость", body: `<ul><li>Уроки краеведения.</li><li>Экскурсии.</li></ul>` },
+  { title: "Что дальше", body: `<ul><li>Версия на чеченском языке.</li><li>QR-коды.</li></ul>` },
+  { title: "Спасибо за внимание!", body: `<ul><li><b>Автор:</b> Мехди Эльмурзаев</li></ul>` }
 ];
 
 let current = 0;
 function renderSlide() {
   const s = slides[current];
-  document.getElementById('slideBox').innerHTML = `
-    <div class="slide-num">СЛАЙД ${String(current + 1).padStart(2, '0')} / 10</div>
-    <h2>${s.title}</h2>
-    <div>${s.body}</div>`;
-  
+  document.getElementById('slideBox').innerHTML = `<div class="slide-num">СЛАЙД ${String(current + 1).padStart(2, '0')} / 10</div><h2>${s.title}</h2><div>${s.body}</div>`;
   document.getElementById('counter').textContent = String(current + 1).padStart(2, '0') + ' / 10';
   document.getElementById('prevBtn').disabled = current === 0;
   document.getElementById('nextBtn').disabled = current === slides.length - 1;
-  
-  // Обновление полосы прогресса
-  const progress = ((current + 1) / slides.length) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
+  document.getElementById('progressBar').style.width = ((current + 1) / slides.length) * 100 + '%';
 }
 
 function changeSlide(dir) {
